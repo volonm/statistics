@@ -43,6 +43,7 @@ def solution_exercise3():
     print('\nExercise 3.0\n')
     # Plot histograms
     pyplot.figure(figsize=(10, 6))
+
     pyplot.subplot(2, 1, 1)
     pyplot.hist(data_group1, bins='auto', color='blue', alpha=0.7, edgecolor='black', rwidth=0.98)
     pyplot.title('Group 1')
@@ -54,14 +55,12 @@ def solution_exercise3():
     pyplot.title('Group 2')
     pyplot.xlabel('Target Selection Speed Data (in ms) for Group 2 with joystick')
     pyplot.ylabel('Number of kids')
-
     pyplot.tight_layout()
     pyplot.show()
 
 
 def solution_exercise5():
     print("\n Exercise 5.0")
-
     # Calculate skewness and kurtosis for each group
     skewness_group1 = skew(data_group1)
     kurtosis_group1 = kurtosis(data_group1)
@@ -101,53 +100,71 @@ def solution_exercise4():
     combined_data = [data_group1, data_group2]
     # Plot combined boxplot
     pyplot.figure(figsize=(8, 6))
-    pyplot.boxplot(combined_data, labels=['Group 1', 'Group 2'], patch_artist=True, medianprops={'color': 'black'})
-    pyplot.title('Boxplot Comparison: Group 1 vs. Group 2')
-    pyplot.xlabel('Groups')
-    pyplot.ylabel('Values')
+    pyplot.boxplot(combined_data, labels=['Group 1', 'Group 2'], patch_artist=True,
+                   medianprops={'color': 'black'}, vert=False)
+    pyplot.title('Combined Boxplot')
+    pyplot.xlabel('Target selection speed in ms')
+    pyplot.ylabel('Groups')
     pyplot.show()
 
 
 def solution_exercise6():
     print("\n Exercise 6.0")
     # Calculate sample standard deviation and sample size
-    sample_std_dev = np.std(data_group1, ddof=1)  # ddof=1 for sample standard deviation
+    sample_std_dev = np.std(data_group1, ddof=1)
     sample_size = len(data_group1)
-
     # Degrees of freedom for chi-square distribution
     df = sample_size - 1
 
-    # Chi-square critical values for 99% confidence interval
+    # Chi-square 99% confidence interval
     chi_lower = chi2.ppf(0.005, df)
     chi_upper = chi2.ppf(0.995, df)
-
-    # Calculate confidence interval
+    # Calculation of CI
     lower_bound = np.sqrt((df * sample_std_dev ** 2) / chi_upper)
     upper_bound = np.sqrt((df * sample_std_dev ** 2) / chi_lower)
-
-    # Print the results
     print(f"Sample Standard Deviation: {sample_std_dev}")
     print(f"99% Confidence Interval for Standard Deviation (Chi-Square): ({lower_bound}, {upper_bound})")
 
 
 def solution_exercise7():
     print("\nExercise 7.0\n")
-    # Given claim of the producer
+    # Given H0 null Hypothesis
     claim_mean = 350
-
     # Perform one-sample t-test
     t_statistic, p_value = ttest_1samp(data_group2, claim_mean)
-
-    # Print the results
     print(f"Test Statistic: {t_statistic}")
     print(f"P-value: {p_value}")
-
     # Check if the null hypothesis is rejected
     alpha = 0.05
     if p_value < alpha:
         print("Reject the null hypothesis. There is enough evidence to dispute the claim.")
     else:
         print("Fail to reject the null hypothesis. There is not enough evidence to dispute the claim.")
+
+
+def solution_exercise8():
+    claimed_variance = 200
+    alpha = 0.05
+    sample_variance = np.var(data_group1, ddof=1)
+    df = len(data_group1) - 1
+
+    chi_square_statistic = (df * sample_variance) / claimed_variance
+    critical_value = chi2.ppf(1 - alpha / 2, df)
+
+    if chi_square_statistic >= critical_value:
+        decision = "False"
+    else:
+        decision = "True"
+
+    if decision == "True":
+        result = "There is no evidence that the variance of target selection speed is more or equals 200 ms^2."
+    else:
+        result = "The variance of target selection speed is more or equals 200 ms^2."
+
+    print(f"Observed Test Statistic (Chi-Square): {chi_square_statistic}")
+    print(f"Critical Chi-Square Value: {critical_value}")
+    print(f"Decision: {decision}")
+    print(f"Result: {result}")
 
 
 if __name__ == '__main__':
